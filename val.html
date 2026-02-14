@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eight Years, Still Us 💙</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Georgia", serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            color: white;
+            background-color: #1a1a1a;
+            transition: 1s ease;
+        }
+
+        #petal-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .petal {
+            position: absolute;
+            background-color: #ff4d4d;
+            border-radius: 150% 0 150% 0;
+            opacity: 0.8;
+            pointer-events: none;
+            animation: fall linear infinite;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) translateX(0) rotateX(0deg) rotateY(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) translateX(120px) rotateX(360deg) rotateY(720deg); opacity: 0; }
+        }
+
+        .container {
+            text-align: center;
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 30px;
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 1s ease;
+            position: relative;
+            z-index: 10;
+            overflow-y: auto;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .fadeIn { opacity: 1; }
+
+        h1 { font-size: 30px; margin-bottom: 10px; color: #66b3ff; text-shadow: 2px 2px 4px #000; }
+        p { font-size: 19px; line-height: 1.6; margin: 10px 0; }
+        .question { margin-top: 20px; font-style: italic; color: #cce6ff; font-weight: bold; }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: "Georgia", serif;
+        }
+
+        .yesBtn { background: #66b3ff; color: #000; font-weight: bold; }
+        .noBtn { background: #444; color: #fff; }
+        .nextBtn { background: #ff66b3; color: #000; font-weight: bold; }
+        .prevBtn { background: #888; color: #fff; }
+        
+        #startBtn { background: #66b3ff; color: #000; font-size: 22px; padding: 15px 40px; margin-top: 20px; }
+    </style>
+</head>
+
+<body>
+
+<div id="petal-container"></div>
+
+<audio id="bgMusic" loop>
+    <source src="music.mp4" type="audio/mp4">
+</audio>
+
+<div class="container" id="content"></div>
+
+<script>
+    let i = 0;
+    let yesSize = 18;
+    let growInterval;
+    const content = document.getElementById("content");
+    const music = document.getElementById("bgMusic");
+    const petalContainer = document.getElementById("petal-container");
+    let musicStarted = false;
+
+    document.body.addEventListener("click", () => {
+        if (!musicStarted) {
+            music.play().catch(e => console.log("Music play blocked"));
+            musicStarted = true;
+        }
+    }, { once: true });
+
+    function getButtons() {
+        return `
+        <div style="margin-top:20px;">
+            <button class="prevBtn" onclick="prevScene()">Back</button>
+            <button class="yesBtn" onclick="sayYes()">Yes 💙</button>
+            <button class="noBtn" onclick="nextScene()">No</button>
+            <button class="nextBtn" onclick="nextScene()">Next 💙</button>
+        </div>`;
+    }
+
+    const scenes = [
+        `<h1>Welcome Poem</h1>
+        <p>
+            You were in 11th,<br>I was in 9th,<br>two different classrooms,<br>two different sides of life.<br><br>
+            Different schools, different dreams,<br>different interests, different schemes.<br><br>
+            We thought about love in opposite ways,<br>had separate paths, separate days.<br>
+            Nothing in common — at least that’s what it seemed,<br>yet somewhere quietly, fate intervened.<br><br>
+            The stars aligned without making a sound,<br>and somehow in the chaos we found solid ground.<br><br>
+            From almost strangers to choosing each other every day,<br>eight years later — we’re still here, still this way.<br><br>
+            InshaAllah, as we step into year eight,<br>I look at us and smile at fate.<br>
+            Because if this isn’t written above, then what is love? 💙
+        </p>
+        <button id="startBtn" onclick="nextScene()">Start 💙</button>`,
+
+        `<h1>🌹 Rose Day</h1>
+        <p>Ek rose tumhare naam,<br>kyunki tum ho meri har subah ka calm 💙</p>
+        <p class="question">Will you accept this rose?</p>
+        ${getButtons()}`,
+
+        `<h1>💍 Propose Day</h1>
+        <p>Seedha sa sawaal, simple si baat,<br>kya tum banoge meri har din ki special baat? 💙</p>
+        <p class="question">Will you be mine?</p>
+        ${getButtons()}`,
+
+        `<h1>🍫 Chocolate Day</h1>
+        <p>Chocolate ho ya tumhari smile ka treat,<br>dono hi kar dete ho mera din complete 💙</p>
+        <p class="question">Am I your favourite sweetness?</p>
+        ${getButtons()}`,
+
+        `<h1>🧸 Teddy Day</h1>
+        <p>Teddy ki tarah soft rehna saath,<br>jab duniya ho tough tum pakadna mera haath 💙</p>
+        <p class="question">Will you be my comfort person?</p>
+        ${getButtons()}`,
+
+        `<h1>🤝 Promise Day</h1>
+        <p>Na filmy waade, na jhooti baat,<br>bas saath nibhaana har haal mein saath 💙</p>
+        <p class="question">Will you choose us even on hard days?</p>
+        ${getButtons()}`,
+
+        `<h1>🤗 Hug Day</h1>
+        <p>Ek hug mein milta sukoon saara,<br>kya tum ho mera safe kinaara? 💙</p>
+        <p class="question">Can I steal a hug forever?</p>
+        ${getButtons()}`,
+
+        `<h1>💋 Kiss Day</h1>
+        <p>Thoda sa sharmana, thoda sa blush,<br>kya mujhe milega ek sweet sa hush? 😌💙</p>
+        <p class="question">Will you give me a kiss?</p>
+        ${getButtons()}`,
+
+        `<h1>💙 14th February</h1>
+        <p>11:11 ki wish se shuru hui kahani,<br>kya tum banoge meri forever wali nishani? 💙</p>
+        <p class="question">Will you be my Valentine — today and always?</p>
+        ${getButtons()}
+        <br><br>
+        <h1 style="font-size:24px;">Until I found you… I found home. 💙</h1>`
+    ];
+
+    function setBackground(index) {
+        const images = ["welcome.jpeg", "rose.jpg", "propose.jpg", "chocolate.jpg", "teddy.jpg", "promise.jpg", "hug.jpg", "kiss.jpg", "valentine.jpg"];
+        const img = images[index] || images[0];
+        document.body.style.backgroundImage = `url('${img}')`;
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center";
+    }
+
+    function showScene() {
+        clearInterval(growInterval);
+        content.classList.remove("fadeIn");
+        petalContainer.innerHTML = ''; // Stop petals if moving back
+
+        setTimeout(() => {
+            content.innerHTML = scenes[i];
+            setBackground(i);
+            content.classList.add("fadeIn");
+
+            if (i > 0) startGrowing();
+            if (i === scenes.length - 1) startPetals();
+        }, 300);
+    }
+
+    function nextScene() { if (i < scenes.length - 1) { i++; showScene(); } }
+    function prevScene() { if (i > 0) { i--; showScene(); } }
+
+    function sayYes() {
+        alert("Forever. In every lifetime. 💙");
+        nextScene();
+    }
+
+    function startGrowing() {
+        const yes = document.querySelector(".yesBtn");
+        if(!yes) return;
+        yesSize = 18;
+        yes.style.fontSize = yesSize + "px";
+        growInterval = setInterval(() => {
+            yesSize += 2;
+            yes.style.fontSize = yesSize + "px";
+        }, 800);
+    }
+
+    function startPetals() {
+        for (let j = 0; j < 40; j++) { createPetal(); }
+    }
+
+    function createPetal() {
+        const petal = document.createElement('div');
+        petal.classList.add('petal');
+        const size = Math.random() * 15 + 10 + 'px';
+        petal.style.width = size;
+        petal.style.height = size;
+        petal.style.left = Math.random() * 100 + 'vw';
+        petal.style.animationDuration = Math.random() * 3 + 3 + 's';
+        petal.style.animationDelay = Math.random() * 5 + 's';
+        petalContainer.appendChild(petal);
+        setTimeout(() => { 
+            petal.remove(); 
+            if(i === scenes.length - 1) createPetal(); 
+        }, 7000);
+    }
+
+    showScene();
+</script>
+</body>
+</html>
